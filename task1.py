@@ -42,33 +42,38 @@ class SlidingWindowRateLimiter:
         return max(0.0, self.user_history[user_id][0] + self.window_size - current_time)
 
 
-# Demonstration of the rate limiter
+# Демонстрація роботи
 def test_rate_limiter():
-    # Create a rate limiter with a 10-second window and 1 message max
+    # Створюємо rate limiter: вікно 10 секунд, 1 повідомлення
     limiter = SlidingWindowRateLimiter(window_size=10, max_requests=1)
 
-    # Simulate a stream of messages from users (user IDs from 1 to 5)
-    print("\n=== Message Stream Simulation ===")
+    # Симулюємо потік повідомлень від користувачів (послідовні ID від 1 до 20)
+    print("\n=== Симуляція потоку повідомлень ===")
     for message_id in range(1, 11):
-        user_id = message_id % 5 + 1  # User IDs cycle from 1 to 5
+        # Симулюємо різних користувачів (ID від 1 до 5)
+        user_id = message_id % 5 + 1
+
         result = limiter.record_message(str(user_id))
         wait_time = limiter.time_until_next_allowed(str(user_id))
-        print(f"Message {message_id:2d} | User {user_id} | "
-              f"{'✓' if result else f'× (wait {wait_time:.1f}s)'}")
-        time.sleep(random.uniform(0.1, 1.0))  # Simulate realistic delays
 
-    # Wait for the window to clear
-    print("\nWaiting for 4 seconds...")
+        print(f"Повідомлення {message_id:2d} | Користувач {user_id} | "
+              f"{'✓' if result else f'× (очікування {wait_time:.1f}с)'}")
+
+        # Невелика затримка між повідомленнями для реалістичності
+        time.sleep(random.uniform(0.1, 1.0))
+
+    # Чекаємо, поки вікно очиститься
+    print("\nОчікуємо 4 секунди...")
     time.sleep(4)
 
-    print("\n=== New Message Stream After Waiting ===")
+    print("\n=== Нова серія повідомлень після очікування ===")
     for message_id in range(11, 21):
-        user_id = message_id % 5 + 1  # User IDs cycle from 1 to 5
+        user_id = message_id % 5 + 1
         result = limiter.record_message(str(user_id))
         wait_time = limiter.time_until_next_allowed(str(user_id))
-        print(f"Message {message_id:2d} | User {user_id} | "
-              f"{'✓' if result else f'× (wait {wait_time:.1f}s)'}")
-        time.sleep(random.uniform(0.1, 1.0))  # Simulate realistic delays
+        print(f"Повідомлення {message_id:2d} | Користувач {user_id} | "
+              f"{'✓' if result else f'× (очікування {wait_time:.1f}с)'}")
+        time.sleep(random.uniform(0.1, 1.0))
 
 
 if __name__ == "__main__":
